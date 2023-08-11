@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  postgresSpringBoot:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: zaq1@WSX
+      POSTGRES_DB: springbootapi
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+
+#  backend:
+#    build:
+#      context: .
+#      dockerfile: docker/backend/Dockerfile
+#    volumes:
+#      - ./:/app
+#    ports:
+#      - "8000:8080"
+#    depends_on:
+#      - postgresSpringBoot
+
+volumes:
+    postgres:
