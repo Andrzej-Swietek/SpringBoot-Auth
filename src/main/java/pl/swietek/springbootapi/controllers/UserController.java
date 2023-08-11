@@ -26,6 +26,18 @@ public class UserController {
                 .body(userService.getUsers());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity
+                    .notFound().build();
+        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<User> addUsers(@RequestBody User user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/add").toUriString());
