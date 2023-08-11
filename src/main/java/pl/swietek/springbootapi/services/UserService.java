@@ -38,4 +38,13 @@ public class UserService {
         // with the user's roles collection
     }
 
+    public boolean deleteUser(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

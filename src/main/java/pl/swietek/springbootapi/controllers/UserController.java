@@ -2,6 +2,7 @@ package pl.swietek.springbootapi.controllers;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/all")
     public ResponseEntity<List<User>> getUsers() {
@@ -46,10 +48,33 @@ public class UserController {
                 .body(userService.saveUser(user));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        User existingUser = userService.getUserById(id);
+
+        if (existingUser != null) {
+            modelMapper.map(updatedUser,existingUser);
+
+            User savedUser = userService.saveUser(existingUser);
+            return ResponseEntity.ok(savedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        boolean deleted = userService.deleteUser(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/role/assignRole")
     public ResponseEntity<?> assignRoleRole(@RequestBody AddUserRoleRequest payload) {
         userService.addRoleToUser(payload.getUsername(), payload.getRoleName());
         return ResponseEntity.ok().build();
-
     }
 }
