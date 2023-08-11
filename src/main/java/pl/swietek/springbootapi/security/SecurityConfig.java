@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(
                         "/api/v1/auth/**",
-                        "/api/v1/**/all"
+                        "/api/v1/public/**"
                 ).permitAll()
                 .requestMatchers("/api/auth/logout").authenticated()
                 .anyRequest().authenticated()
