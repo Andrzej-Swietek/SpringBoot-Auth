@@ -1,8 +1,10 @@
 package pl.swietek.springbootapi.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.swietek.springbootapi.models.Student;
+import pl.swietek.springbootapi.responses.auth.ApiBasicResponse;
 import pl.swietek.springbootapi.services.StudentService;
 
 import java.util.List;
@@ -20,27 +22,53 @@ public class StudentController {
     }
 
     @GetMapping
-    public List<Student> getStudents() {
-        return studentService.getStudents();
+    public ResponseEntity<List<Student>> getStudents() {
+        return ResponseEntity
+                .ok()
+                .body(studentService.getStudents()) ;
+    }
+
+    @GetMapping(path = "{studentId}")
+    public ResponseEntity<Student> getStudentById(@PathVariable("studentId") Long id) {
+        Student student = studentService.getStudentById(id);
+
+        if (student != null) {
+            return ResponseEntity.ok(student);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public void registerStudent(@RequestBody Student student){
-        studentService.addNewStudent(student);
+    public ResponseEntity<Student> registerStudent(@RequestBody Student student){
+        return ResponseEntity
+                .ok()
+                .body(studentService.addNewStudent(student));
     }
 
     @PutMapping(path="{studentId}")
-    public void updateStudent(
+    public ResponseEntity<Student> updateStudent(
             @PathVariable("studentId") Long id,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email
     ) {
-        studentService.updateStudent(id, name, email);
+        return ResponseEntity
+                .ok()
+                .body(studentService.updateStudent(id, name, email));
     }
 
 
     @DeleteMapping(path = "{studentId}")
-    public void deleteStudent(@PathVariable("studentId") Long id) {
-        studentService.deleteStudent(id);
+    public ResponseEntity<?> deleteStudent(@PathVariable("studentId") Long id) {
+        boolean deleted = studentService.deleteStudent(id);
+        if (deleted) {
+            return ResponseEntity
+                    .ok()
+                    .body(new ApiBasicResponse(true, "Student Deleted"));
+        } else {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ApiBasicResponse(false, "Student Not Found or Delete Failed"));
+        }
     }
 }

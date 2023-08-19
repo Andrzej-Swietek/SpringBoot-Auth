@@ -1,14 +1,12 @@
 package pl.swietek.springbootapi.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.swietek.springbootapi.models.Role;
 import pl.swietek.springbootapi.models.User;
 import pl.swietek.springbootapi.repositories.UserRepository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,20 +21,40 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        return userOptional.orElse(null);
+        return userRepository
+                .findById(id)
+                .orElse(null);
     }
-    public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public User saveUser(User userRequest) {
+        var user = User.builder()
+                .firstname(userRequest.getFirstname())
+                .lastname(userRequest.getLastname())
+                .email(userRequest.getEmail())
+                .password( passwordEncoder.encode(userRequest.getPassword()) )
+                .role(userRequest.getRole())
+                .build();
         return userRepository.save(user);
     }
 
-    public void addRoleToUser(String username, String roleName) {
-        // Implement your logic for adding a role to a user
-        // This could involve fetching the user by username from the repository,
-        // fetching the role by roleName, and associating them
-        // with the user's roles collection
-    }
+//    public Optional<User> addRoleToUser(String email, UserRoleEnum roleName) {
+//        Optional<User> userOptional = userRepository.findByEmail(email);
+//
+//        if (userOptional.isEmpty()) {
+//            return Optional.empty(); // User not found
+//        }
+//
+//        User user = userOptional.get();
+//
+//        // Check if the user already has the role
+//        if (user.getRoles().contains(roleName)) {
+//            return Optional.of(user); // Role is already associated with the user
+//        }
+//
+//        user.getRoles().add(roleName);
+//        userRepository.save(user);
+//
+//        return Optional.of(user);
+//    }
 
     public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {

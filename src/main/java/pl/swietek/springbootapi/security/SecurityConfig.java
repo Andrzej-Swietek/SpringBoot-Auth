@@ -15,6 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import pl.swietek.springbootapi.configuration.JWTAuthFilter;
 
+import static org.springframework.http.HttpMethod.*;
+import static pl.swietek.springbootapi.models.Permission.*;
+import static pl.swietek.springbootapi.models.Role.ADMIN;
+import static pl.swietek.springbootapi.models.Role.USER;
+
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -36,6 +41,13 @@ public class SecurityConfig {
                         "/api/v1/auth/**",
                         "/api/v1/public/**"
                 ).permitAll()
+
+                .requestMatchers( GET, "/api/v1/user/**").hasAnyAuthority(ADMIN_READ.name(), MASTER_READ.name(), USER.name())
+                .requestMatchers( POST,"/api/v1/user/**").hasAnyAuthority(ADMIN_CREATE.name())
+                .requestMatchers( PUT,"/api/v1/user/**").hasAnyAuthority(ADMIN_UPDATE.name())
+                .requestMatchers( DELETE,"/api/v1/user/**").hasAnyAuthority(ADMIN_DELETE.name())
+
+                 /* .requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name()) */
                 .requestMatchers("/api/auth/logout").authenticated()
                 .anyRequest().authenticated()
                 .and()

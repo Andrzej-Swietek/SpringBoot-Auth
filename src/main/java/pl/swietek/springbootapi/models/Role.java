@@ -1,22 +1,50 @@
 package pl.swietek.springbootapi.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-//@Entity
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
-//public class Role {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-//    private Long id;
-//    private String name;
-//}
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static pl.swietek.springbootapi.models.Permission.*;
+
+@Getter
+@RequiredArgsConstructor
 public enum Role {
-    USER,
-    MASTER,
-    ADMIN
+    USER(Collections.emptySet()),
+    ADMIN(
+            Set.of(
+                    ADMIN_READ,
+                    ADMIN_UPDATE,
+                    ADMIN_DELETE,
+                    ADMIN_CREATE,
+                    MASTER_READ,
+                    MASTER_UPDATE,
+                    MASTER_DELETE,
+                    MASTER_CREATE
+            )
+    ),
+    MASTER(
+            Set.of(
+                    MASTER_READ,
+                    MASTER_UPDATE,
+                    MASTER_DELETE,
+                    MASTER_CREATE
+            )
+    );
+
+    private final Set<Permission> permissions;
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        var authorities = getPermissions()
+                .stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .collect(Collectors.toList());
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        return (List<SimpleGrantedAuthority>) authorities;
+    }
+
 }
+
