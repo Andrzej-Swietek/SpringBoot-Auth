@@ -36,6 +36,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUser(User user){
+        return userRepository.save(user);
+    }
+
 //    public Optional<User> addRoleToUser(String email, UserRoleEnum roleName) {
 //        Optional<User> userOptional = userRepository.findByEmail(email);
 //

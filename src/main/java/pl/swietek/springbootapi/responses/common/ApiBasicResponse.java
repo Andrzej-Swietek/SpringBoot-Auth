@@ -1,4 +1,4 @@
-package pl.swietek.springbootapi.responses.auth;
+package pl.swietek.springbootapi.responses.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

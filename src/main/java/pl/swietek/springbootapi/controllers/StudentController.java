@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.swietek.springbootapi.models.Student;
-import pl.swietek.springbootapi.responses.auth.ApiBasicResponse;
+import pl.swietek.springbootapi.responses.common.ApiBasicResponse;
 import pl.swietek.springbootapi.services.StudentService;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping
+    @GetMapping("all")
     public ResponseEntity<List<Student>> getStudents() {
         return ResponseEntity
                 .ok()
