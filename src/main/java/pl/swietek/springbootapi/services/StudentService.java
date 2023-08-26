@@ -2,6 +2,9 @@ package pl.swietek.springbootapi.services;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.swietek.springbootapi.models.Student;
@@ -25,8 +28,16 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public List<Student> getStudents() {
-        return studentRepository.findAll();
+    public Page<Student> getStudents(int page, int perPage, String search) {
+        Pageable pageable = PageRequest.of(page - 1, perPage);
+
+        if (search != null && !search.isEmpty()) {
+            return studentRepository
+                    .searchStudents(search, pageable);
+        } else {
+            return studentRepository
+                    .findAll(pageable);
+        }
     }
 
     public Student getStudentById(Long id) {

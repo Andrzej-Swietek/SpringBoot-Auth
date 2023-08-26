@@ -8,6 +8,7 @@ import pl.swietek.springbootapi.repositories.StudentRepository;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -15,12 +16,23 @@ public class StudentConfig {
     @Bean
     CommandLineRunner commandLineRunner(StudentRepository repository) {
         return args -> {
-           Student student1 = new Student( "student",  LocalDate.of(2001, Month.FEBRUARY, 11),"user@user.com" );
-           Student student2 = new Student( "student2", LocalDate.of(2001, Month.FEBRUARY, 11),"user@user.com" );
-
-           repository.saveAll(
-                   List.of(student1, student2)
-           );
+            List<Student> mockStudents = createMockStudents();
+            repository.saveAll(mockStudents);
         };
+    }
+
+    private List<Student> createMockStudents() {
+        List<Student> students = new ArrayList<>();
+
+        for (int i = 0; i < 30; i++) {
+            Student student = new Student(
+                    "Student" + (i + 1),
+                    LocalDate.of(2000 + i, Month.JANUARY, 1),
+                    "student" + (i + 1) + "@example.com"
+            );
+            students.add(student);
+        }
+
+        return students;
     }
 }

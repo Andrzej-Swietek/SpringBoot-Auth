@@ -1,10 +1,12 @@
 package pl.swietek.springbootapi.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.swietek.springbootapi.models.Student;
 import pl.swietek.springbootapi.responses.common.ApiBasicResponse;
+import pl.swietek.springbootapi.responses.common.PaginatedApiResponse;
 import pl.swietek.springbootapi.services.StudentService;
 
 import java.util.List;
@@ -21,11 +23,23 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+
+    // TODO: SZWAGIER /api/v1/student/all?page=1&perpage=20&search=abc
+
     @GetMapping("all")
-    public ResponseEntity<List<Student>> getStudents() {
+    public ResponseEntity<PaginatedApiResponse<Student>> getStudents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int perPage,
+            @RequestParam(required = false) String search
+    ) {
+        Page<Student> studentPage = studentService.getStudents(page, perPage, search);
+        String baseLink = "/api/v1/student/all?perpage=" + perPage + (!search.isEmpty() ? "&search=" + search : "");
+
+        PaginatedApiResponse<Student> response = PaginatedApiResponse.<Student>withData(studentPage, baseLink, page);
+
         return ResponseEntity
                 .ok()
-                .body(studentService.getStudents()) ;
+                .body(response) ;
     }
 
     @GetMapping(path = "{studentId}")
